@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 07/10/18 14:13:38 by SUMO netconvert Version 0.30.0
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="SF_with_TLS_combined.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="SF_combined"/>
+    </output>
+
+    <processing>
+        <no-turnarounds value="true"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+        <junctions.corner-detail value="0"/>
+        <rectangular-lane-cut value="false"/>
+    </processing>
+
+</configuration>
+-->
+
+<nodes version="0.27" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <location netOffset="-679322.03,-4820339.81" convBoundary="0.00,0.00,6963.89,10896.37" origBoundary="679322.03,4820339.81,686285.93,4831236.18" projParameter="!"/>
+
+    <node id="1" x="587.36" y="10896.37" type="priority"/>
+    <node id="10" x="3956.31" y="3459.03" type="traffic_light" tl="10"/>
+    <node id="11" x="1575.82" y="3308.15" type="traffic_light" tl="11"/>
+    <node id="12" x="0.00" y="3274.62" type="traffic_light" tl="12"/>
+    <node id="13" x="84.71" y="0.00" type="priority"/>
+    <node id="14" x="1608.72" y="1672.17" type="traffic_light" tl="14"/>
+    <node id="15" x="4021.72" y="1714.50" type="traffic_light" tl="15"/>
+    <node id="16" x="5588.06" y="3725.34" type="traffic_light" tl="16"/>
+    <node id="17" x="5588.06" y="3111.51" type="traffic_light" tl="17"/>
+    <node id="18" x="6963.89" y="3767.67" type="traffic_light" tl="18"/>
+    <node id="19" x="5651.56" y="1820.34" type="traffic_light" tl="19"/>
+    <node id="2" x="5410.02" y="10278.93" type="priority"/>
+    <node id="20" x="5630.39" y="232.83" type="traffic_light" tl="20"/>
+    <node id="21" x="4064.06" y="127.00" type="traffic_light" tl="21"/>
+    <node id="22" x="4042.89" y="931.34" type="traffic_light" tl="22"/>
+    <node id="23" x="1629.88" y="825.50" type="traffic_light" tl="23"/>
+    <node id="24" x="1651.05" y="63.50" type="traffic_light" tl="24"/>
+    <node id="3" x="363.98" y="6483.40" type="traffic_light" tl="3"/>
+    <node id="4" x="1505.00" y="5557.36" type="traffic_light" tl="4"/>
+    <node id="5" x="3906.02" y="5588.06" type="traffic_light" tl="5"/>
+    <node id="6" x="5532.13" y="6996.24" type="traffic_light" tl="6"/>
+    <node id="7" x="6957.07" y="5638.35" type="priority"/>
+    <node id="8" x="5515.37" y="5420.42" type="traffic_light" tl="8"/>
+    <node id="9" x="3939.55" y="4179.88" type="traffic_light" tl="9"/>
+</nodes>
