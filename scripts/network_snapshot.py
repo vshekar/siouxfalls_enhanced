@@ -22,9 +22,9 @@ class SumoSim():
     def __init__(self, disrupted, lmbd, start_time, end_time, prev_network_size, filename, rank):
         self.vehroutes_path = "../output/net_dump/vehroutes{}.xml".format(rank)
 
-    	self.SUMOCMD = [self.SUMOBIN, "-c", "../config/config_with_TLS_combined_no_trips.sumocfg",
-        	       	"--time-to-teleport", "300", "--vehroute-output", self.vehroutes_path,
-        		"--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
+        self.SUMOCMD = [self.SUMOBIN, "-c", "../config/config_with_TLS_combined_no_trips.sumocfg",
+                    "--time-to-teleport", "300", "--vehroute-output", self.vehroutes_path,
+                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
         print("*********************************************************")
         print("Simulation Details: \n Disrupted link: {} \n Lambda: {} \n Start - End time: {} - {}".format(disrupted, lmbd, start_time, end_time))
         print("Initializing")
