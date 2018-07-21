@@ -6,7 +6,7 @@ Created on Fri Jul 20 14:12:55 2018
 """
 
 from mpi4py import MPI
-from network_snapshop import SumoSim
+from network_snapshot import SumoSim
 import sumolib
 import time
 

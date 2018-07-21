@@ -3,7 +3,7 @@ import traci
 import sumolib
 from collections import namedtuple
 import pickle
-import networkx
+#import networkx
 import xml.etree.ElementTree as ET
 import json
 import time
@@ -16,15 +16,15 @@ vehicleData = namedtuple('vehicleData', ['lane', 'pos', 'speed', 'accel', 'route
 class SumoSim():
     
     SUMOBIN = 'sumo'
-    SUMOCMD = [SUMOBIN, "-c", "../config/config_with_TLS_combined_no_trips.sumocfg",
-               "--time-to-teleport", "300", "--vehroute-output", vehroutes_path,
-               "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
 
     snapshot_data = {}
 
     def __init__(self, disrupted, lmbd, start_time, end_time, prev_network_size, filename, rank):
         self.vehroutes_path = "../output/net_dump/vehroutes{}.xml".format(rank)
 
+    	self.SUMOCMD = [self.SUMOBIN, "-c", "../config/config_with_TLS_combined_no_trips.sumocfg",
+        	       	"--time-to-teleport", "300", "--vehroute-output", self.vehroutes_path,
+        		"--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
         print("*********************************************************")
         print("Simulation Details: \n Disrupted link: {} \n Lambda: {} \n Start - End time: {} - {}".format(disrupted, lmbd, start_time, end_time))
         print("Initializing")
@@ -312,7 +312,7 @@ if __name__=="__main__":
                 else:
                     filename = "../output/net_dump/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, lmbd, False)
                 
-                ss = SumoSim(edge, lmbd, start_time, end_time, network_size, filename)
+                ss = SumoSim(edge, lmbd, start_time, end_time, network_size, filename, 0)
                 if not os.path.isfile(filename) and network_size != len(ss.subnetwork_edges):
                     f = open(filename, 'w')
                     f.close()
