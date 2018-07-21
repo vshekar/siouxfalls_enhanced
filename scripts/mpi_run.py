@@ -9,6 +9,7 @@ from mpi4py import MPI
 from network_snapshot import SumoSim
 import sumolib
 import time
+import os
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
