@@ -18,7 +18,7 @@ network = sumolib.net.readNet('../network/SF_combined.net.xml')
 edges = network.getEdges()
 edgeIDs = [edge.getID() for edge in edges]
 time_intervals = [(0,28800), (28800, 57600), (57600, 86400), (0,0)]
-lmbd_list = [1, 2, 3 ,4, 5, 6, 7, 100]
+lmbd_list = [1, 2, 3 ,4, 5, 6, 7, 8, 9, 10, 100]
 
 for edge in edgeIDs:
     if rank+1 == int(edge.split('_')[0]):
