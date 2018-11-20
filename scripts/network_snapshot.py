@@ -23,8 +23,8 @@ class SumoSim():
         self.vehroutes_path = "../output/net_dump/vehroutes{}.xml".format(rank)
 
         self.SUMOCMD = [self.SUMOBIN, "-c", "../config/config_with_TLS_combined_no_trips.sumocfg",
-                    "--time-to-teleport", "300", "--vehroute-output", self.vehroutes_path,
-                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
+                    "--time-to-teleport", "00", "--vehroute-output", self.vehroutes_path,
+                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true", "--no-step-log"]
         print("*********************************************************")
         print("Simulation Details: \n Disrupted link: {} \n Lambda: {} \n Start - End time: {} - {}".format(disrupted, lmbd, start_time, end_time))
         print("Initializing")
@@ -148,8 +148,8 @@ class SumoSim():
             else:
                 traci.route.add(vehicle + '_route', self.new_demand_route[vehicle])
             try:
-                traci.vehicle.add(vehicle, vehicle+'_route', depart= self.new_demand_depart[vehicle],
-                              pos=self.new_demand_depart_pos[vehicle], speed=0,
+                traci.vehicle.add(vehicle, vehicle+'_route', depart= str(self.new_demand_depart[vehicle]),
+                              departPos=str(self.new_demand_depart_pos[vehicle]), departSpeed='0',
                               typeID="passenger")
             except traci.exceptions.TraCIException as e:
                 print(e.getCommand())
@@ -214,7 +214,7 @@ class SumoSim():
         tree = ET.parse(self.vehroutes_path)
         root = tree.getroot()
         for vehicle in root:
-            data[vehicle.attrib['id']] = float(vehicle.attrib['arrival']) - float(vehicle.attrib['depart'])
+            data[vehicle.attrib['id']] = (float(vehicle.attrib['arrival']), float(vehicle.attrib['depart']))
 
         data['sim_time'] = self.sim_end - self.sim_start
         
@@ -300,9 +300,12 @@ class Graph():
 if __name__=="__main__":
     network = sumolib.net.readNet('../network/SF_combined.net.xml')
     edges = network.getEdges()
-    edgeIDs = [edge.getID() for edge in edges]
-    time_intervals = [(0,28800), (28800, 57600), (57600, 86400), (0,0)]
-    lmbd_list = [1, 2, 3 ,4, 5, 6, 7, 8 , 9 , 10, 100]
+    #edgeIDs = [edge.getID() for edge in edges]
+    edgeIDs = ['55_1']
+    #time_intervals = [(0,28800), (28800, 57600), (57600, 86400), (0,0)]
+    time_intervals = [(0,0), (28800, 57600)]
+    #lmbd_list = [1, 2, 3 ,4, 5, 6, 7, 8 , 9 , 10, 100]
+    lmbd_list = [100]
     for edge in edgeIDs:
         for start_time, end_time in time_intervals:
             network_size = 0
@@ -313,10 +316,10 @@ if __name__=="__main__":
                     filename = "../output/net_dump/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, lmbd, False)
                 
                 ss = SumoSim(edge, lmbd, start_time, end_time, network_size, filename, 0)
-                if not os.path.isfile(filename) and network_size != len(ss.subnetwork_edges):
-                    f = open(filename, 'w')
-                    f.close()
-                    ss.run()
+                #if not os.path.isfile(filename) and network_size != len(ss.subnetwork_edges):
+                f = open(filename, 'w')
+                f.close()
+                ss.run()
                 network_size = len(ss.subnetwork_edges)
 
 
