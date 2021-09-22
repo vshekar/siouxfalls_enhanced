@@ -5,7 +5,7 @@ import pandas as pd
 import math
 
 def write_routes():
-	tree = ET.parse('vehroutes.xml')
+	tree = ET.parse('vehroutes1000.xml')
 	root = tree.getroot()
 
 	routes = {}
@@ -15,14 +15,14 @@ def write_routes():
 			if 'exitTimes' in rt.attrib.keys():
 				route = {}
 				route['edges'] = rt.attrib['edges'].split()
-				route['exitTimes'] = [r.attrib['depart']] + rt.attrib['exitTimes'].split()[:-1]
-				route['departLane'] = r.attrib['departLane']
-				route['departPos'] = r.attrib['departPos']
-				route['departSpeed'] = r.attrib['departSpeed']
+				route['exitTimes'] = [int(float(r.attrib['depart']))] + [int(float(x)) for x in rt.attrib['exitTimes'].split()[:-1]]
+				#route['departLane'] = r.attrib['departLane']
+				#route['departPos'] = r.attrib['departPos']
+				#route['departSpeed'] = r.attrib['departSpeed']
 				routes[r.attrib['id']] = route
 
 	jsondata = json.dumps(routes)
-	f = open('vehroutes.json', 'w')
+	f = open('vehroutes1000.json', 'w')
 	f.write(jsondata)
 	f.close()
             

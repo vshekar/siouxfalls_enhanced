@@ -23,7 +23,7 @@ def get_vul(link, interval, lmbd):
     #print("Vulnerability of subnetwork: {}".format(num/den))
     sub_vul = num/den
 
-    lambdas = [100, 7, 6, 5, 4]
+    lambdas = [100]
     for lmbd in lambdas:
         filename = "../output/net_dump/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, link, interval[0], interval[1], lmbd, False)
         if os.path.isfile(filename):

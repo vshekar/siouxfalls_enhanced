@@ -21,10 +21,15 @@ class SumoSim():
 
     def __init__(self, disrupted, lmbd, start_time, end_time, prev_network_size, filename, rank):
         self.vehroutes_path = "../output/net_dump/vehroutes{}.xml".format(rank)
+        self.rank = rank
+        self.rerouting_options = ['--device.rerouting.probability', '0.1', 
+                                  '--device.rerouting.period', '300', 
+                                  '--device.rerouting.threads', '3', "--no-step-log"]
 
-        self.SUMOCMD = [self.SUMOBIN, "-c", "../config/config_with_TLS_combined_no_trips.sumocfg",
-                    "--time-to-teleport", "00", "--vehroute-output", self.vehroutes_path,
-                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true", "--no-step-log"]
+        self.SUMOCMD = [self.SUMOBIN, "-c", f"../config/generated_configs/config_{rank}.sumocfg",
+                    "--time-to-teleport", "400", "--vehroute-output", self.vehroutes_path,
+                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
+        self.SUMOCMD = self.SUMOCMD+self.rerouting_options
         print("*********************************************************")
         print("Simulation Details: \n Disrupted link: {} \n Lambda: {} \n Start - End time: {} - {}".format(disrupted, lmbd, start_time, end_time))
         print("Initializing")
@@ -44,14 +49,53 @@ class SumoSim():
             self.nominal = False
 
         self.lmbd = lmbd
+        
         print("Searching network")
         self.convert_network(lmbd=self.lmbd)
+        self.setup_additional_file()
         
         print("Setting up simulation")
         self.setup_sim()
         print("Total number of trips: {}".format(len(self.new_demand_route)))
         
 
+    def setup_additional_file(self):
+        #config_with_TLS_combined_no_trips.sumocfg
+        tree = ET.parse('../config/base_configs/config_with_TLS_combined_no_trips.sumocfg')
+        add_files = list(tree.iter(tag='additional-files'))[0]
+        add_files.set('value', f'additional_{self.rank}.xml')
+        tree.write(f'../config/generated_configs/config_{self.rank}.sumocfg', encoding='UTF-8', xml_declaration=True)
+
+
+        tree = ET.parse('../config/base_configs/additional.xml')
+        xmlRoot = tree.getroot()
+        rerouter = ET.Element("rerouter")
+        interval = ET.Element("interval")
+        closing_reroute = ET.Element("closingReroute")
+
+        closing_reroute.set('id', str(self.disrupted))
+        closing_reroute.set('disallow', 'passenger')
+        interval.set('begin', str(self.start_time))
+        interval.set('end', str(self.end_time))
+        rerouter.set('id', '1')
+        
+        disruptedEdge = self.network.getEdge(self.disrupted)
+        #sources = [edge.getID() for edge in list(disruptedEdge.getIncoming().keys())]
+        #dests = [edge.getID() for edge in list(disruptedEdge.getOutgoing().keys())]
+        to_node = disruptedEdge.getToNode()
+        from_node = disruptedEdge.getFromNode()
+        dests = [edge.getID() for edge in list(to_node.getIncoming())] + \
+                        [edge.getID() for edge in list(to_node.getOutgoing())]
+        sources = [edge.getID() for edge in list(from_node.getIncoming())] + \
+                        [edge.getID() for edge in list(from_node.getOutgoing())]
+
+        rerouter.set('edges', ' '.join(sources + dests))
+        #rerouter.set('edges', '1_1')
+        interval.append(closing_reroute)
+        rerouter.append(interval)
+        xmlRoot.append(rerouter)
+
+        tree.write(f'../config/generated_configs/additional_{self.rank}.xml')
 
 
     def run(self):
@@ -70,7 +114,8 @@ class SumoSim():
         #Vehicles considered will hold names of vehicles that pass through the subnetwork
         vehicles_considered = []
         for vehicle in jsondata:
-            if len(set(jsondata[vehicle]['edges']) & set(self.subnetwork_edges)) > 0:
+            #if len(set(jsondata[vehicle]['edges']) & set(self.subnetwork_edges)) > 0:
+            if len(set(jsondata[vehicle]['edges']).intersection(set(self.subnetwork_edges))) > 0:
                 vehicles_considered.append(vehicle)
 
         #Calculate new demand and the depart time
@@ -129,10 +174,11 @@ class SumoSim():
 
     def setup_trips(self):
         for vehicle in self.new_demand_route:
-
+            """
             if len(self.new_demand_route[vehicle]) > 1 and self.disrupted in self.new_demand_route[vehicle]:
                 if self.disrupted != self.new_demand_route[vehicle][0] and self.disrupted != self.new_demand_route[vehicle][-1]:
                     traci.route.add(vehicle+'_route', [self.new_demand_route[vehicle][0], self.new_demand_route[vehicle][-1]])
+                    #traci.route.add(vehicle + '_route', self.new_demand_route[vehicle])
                 else:
                     if self.new_demand_route[vehicle][0] == self.disrupted:
                         traci.route.add(vehicle + '_route',
@@ -147,6 +193,18 @@ class SumoSim():
                 traci.route.add(vehicle + '_route', [source, dest])
             else:
                 traci.route.add(vehicle + '_route', self.new_demand_route[vehicle])
+            """
+            if self.new_demand_route[vehicle][0] == self.disrupted:
+                #disruptedEdge = self.network.getEdge(self.disrupted)
+                #source = list(disruptedEdge.getIncoming().keys())[0].getID()
+                #dest = list(disruptedEdge.getOutgoing().keys())[0].getID()
+                #traci.route.add(vehicle + '_route', [source, dest])
+                if self.start_time <= self.new_demand_depart[vehicle] and self.new_demand_depart[vehicle] <= self.end_time:
+                    self.new_demand_depart[vehicle] = self.end_time+1
+            
+            traci.route.add(vehicle + '_route', self.new_demand_route[vehicle])
+
+            
             try:
                 traci.vehicle.add(vehicle, vehicle+'_route', depart= str(self.new_demand_depart[vehicle]),
                               departPos=str(self.new_demand_depart_pos[vehicle]), departSpeed='0',
@@ -169,7 +227,7 @@ class SumoSim():
         self.step = 0
 
         while self.arrived < len(self.new_demand_route):
-            self.disrupt_links()
+            #self.disrupt_links()
             """
             if self.step in self.new_demand_depart_vehicles.keys():
                 vehicles = self.new_demand_depart_vehicles[self.step]
@@ -179,6 +237,11 @@ class SumoSim():
             traci.simulationStep()
             self.step += 1
             self.arrived += traci.simulation.getArrivedNumber()
+            if self.step  in [self.end_time+30, self.start_time+30, 30, 28830, 57630, 86430]:
+                for edge in self.subnetwork_edges:
+                    for veh in traci.edge.getLastStepVehicleIDs(edge):
+                        traci.vehicle.rerouteTraveltime(veh)
+
 
         traci.close()
 
@@ -199,13 +262,9 @@ class SumoSim():
     def convert_network(self, lmbd = 1):
         tree = ET.parse('../network/SF_combined.edg.xml')
         root = tree.getroot()
-
-
         self.network_rep = Graph()
         for edge in root:
             self.network_rep.add_edge(edge.attrib['from'], edge.attrib['to'],edge.attrib['id'])
-
-
         self.subnetwork_edges = self.network_rep.get_subnetwork(self.disrupted, lmbd, disrupted= not self.nominal)
         print("Size of subnetwork : {}".format(len(self.subnetwork_edges)))
 
@@ -214,12 +273,21 @@ class SumoSim():
         tree = ET.parse(self.vehroutes_path)
         root = tree.getroot()
         for vehicle in root:
-            data[vehicle.attrib['id']] = (float(vehicle.attrib['arrival']), float(vehicle.attrib['depart']))
-
+            data[vehicle.attrib['id']] = float(vehicle.attrib['arrival']) - float(vehicle.attrib['depart'])
+            """
+            for route in vehicle:
+                if route.tag == 'routeDistribution':
+                    for r in route:
+                        get_route(r)
+                else:
+                    get_route(route)
+            """
+            
         data['sim_time'] = self.sim_end - self.sim_start
         
         with open(self.filename, 'w') as outfile:
             json.dump(data, outfile)
+        tree.write(self.filename+'.xml')
 
 
 class Graph():
@@ -236,16 +304,18 @@ class Graph():
         self.edge_names[(source, dest)] = name
         self.node_names[name] = (source, dest)
 
-    def get_subnetwork(self, name, depth, disrupted=True):
+    def get_subnetwork(self, name, depth, disrupted=True, get_nodes=False):
+        nodes = set()
         source, dest = self.node_names[name]
         visited = set()
         #visited.add(source)
 
-        visited |= self.bfs_search(source, depth, visited)
-        visited |= self.bfs_search(dest, depth, visited)
+        visited = self.bfs_search(source, depth, visited)
+        visited2 = set()
+        visited = visited.union(self.bfs_search(dest, depth, visited2)) 
 
         edge_names = set()
-        self.subnetwork = Graph()
+        #self.subnetwork = Graph()
 
         for source in visited:
             for dest in self.graph[source]:
@@ -254,11 +324,15 @@ class Graph():
                 if (dest, source) in self.edge_names:
                     e_name = self.edge_names[(dest, source)]
                     edge_names.add(e_name)
+                    nodes.add(source)
+                    nodes.add(dest)
                 #self.subnetwork.add_edge(source, dest, e_name)
 
         #edge_names.remove(name)
-
-        return edge_names
+        if get_nodes:
+            return edge_names, visited
+        else:
+            return edge_names
 
     def get_path_edges(self, start_edge, end_edge):
         a, start = self.node_names[start_edge]
@@ -301,9 +375,9 @@ if __name__=="__main__":
     network = sumolib.net.readNet('../network/SF_combined.net.xml')
     edges = network.getEdges()
     #edgeIDs = [edge.getID() for edge in edges]
-    edgeIDs = ['55_1']
+    edgeIDs = ['50_1']
     #time_intervals = [(0,28800), (28800, 57600), (57600, 86400), (0,0)]
-    time_intervals = [(0,0), (28800, 57600)]
+    time_intervals = [(start_time, start_time+3600) for start_time in range(0, 86400, 3600)]
     #lmbd_list = [1, 2, 3 ,4, 5, 6, 7, 8 , 9 , 10, 100]
     lmbd_list = [100]
     for edge in edgeIDs:
@@ -311,9 +385,9 @@ if __name__=="__main__":
             network_size = 0
             for lmbd in lmbd_list:
                 if start_time == end_time:
-                    filename = "../output/net_dump/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, lmbd, True)
+                    filename = "../output/hourly/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, lmbd, True)
                 else:
-                    filename = "../output/net_dump/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, lmbd, False)
+                    filename = "../output/hourly/lmbd{}/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, lmbd, False)
                 
                 ss = SumoSim(edge, lmbd, start_time, end_time, network_size, filename, 0)
                 #if not os.path.isfile(filename) and network_size != len(ss.subnetwork_edges):
@@ -321,8 +395,3 @@ if __name__=="__main__":
                 f.close()
                 ss.run()
                 network_size = len(ss.subnetwork_edges)
-
-
-
-
-
