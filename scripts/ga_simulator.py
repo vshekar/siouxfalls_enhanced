@@ -66,8 +66,8 @@ class SumoSim():
         #config_with_TLS_combined_no_trips.sumocfg
         tree = ET.parse('../config/base_configs/config_with_TLS_combined_no_trips.sumocfg')
         add_files = list(tree.iter(tag='additional-files'))[0]
-        add_files.set('value', f'additional_{self.rank}.xml')
-        tree.write(f'../config/generated_configs/config_{self.rank}.sumocfg', encoding='UTF-8', xml_declaration=True)
+        add_files.set('value', 'additional_{}.xml'.format(self.rank))
+        tree.write('../config/generated_configs/config_{}.sumocfg'.format(self.rank), encoding='UTF-8', xml_declaration=True)
         tree = ET.parse('../config/base_configs/additional.xml')
         xmlRoot = tree.getroot()
         rerouter = ET.Element("rerouter")
@@ -104,7 +104,7 @@ class SumoSim():
         rerouter.append(interval)
         xmlRoot.append(rerouter)
 
-        tree.write(f'../config/generated_configs/additional_{self.rank}.xml')
+        tree.write('../config/generated_configs/additional_{}.xml'.format(self.rank))
 
 
     def run(self):
@@ -311,7 +311,7 @@ class Graph():
 
 def write_results(lmbd, edge, start_time, end_time, individual, result, rank):
     base_path = Path('./ga_results')
-    rank_path = base_path / f'rank_{rank}_results.pkl'
+    rank_path = base_path / 'rank_{}_results.pkl'.format(rank)
     if rank_path.exists():
         with rank_path.open('rb') as f:
             result_dict = pickle.load(f)
@@ -351,7 +351,7 @@ def run_sim(lmbd, edge, start_time, end_time, rank, individual):
         ss.run()
         with open(filename) as f:
             sub_tt = json.load(f)
-        filename = f'../output/net_dump/1.high_correlation/lmbd{lmbd}/traveltime_{edge}_0_10_{lmbd}_False.json'
+        filename = '../output/net_dump/1.high_correlation/lmbd{}/traveltime_{}_0_10_{}_False.json'.format(lmbd, edge, lmbd)
         with open(filename) as f:
             nom_tt = json.load(f)
 

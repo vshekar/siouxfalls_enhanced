@@ -73,9 +73,9 @@ def main():
 
 if __name__ == "__main__":
     pop, log, hof = main()
-    pickle.dump(pop, open(f'./final_results/pop_lmbd{LAMBDA}_cxpb{CXPB}_mutpb{MUTPB}.pkl', 'wb'))
-    pickle.dump(log, open(f'./final_results/log_lmbd{LAMBDA}_cxpb{CXPB}_mutpb{MUTPB}.pkl', 'wb'))
-    pickle.dump(hof, open(f'./final_results/hof_lmbd{LAMBDA}_cxpb{CXPB}_mutpb{MUTPB}.pkl', 'wb'))
+    pickle.dump(pop, open('./final_results/pop_lmbd{}_cxpb{}_mutpb{}.pkl'.format(LAMBDA, CXPB, MUTPB), 'wb'))
+    pickle.dump(log, open('./final_results/log_lmbd{}_cxpb{}_mutpb{}.pkl'.format(LAMBDA, CXPB, MUTPB), 'wb'))
+    pickle.dump(hof, open('./final_results/hof_lmbd{}_cxpb{}_mutpb{}.pkl'.format(LAMBDA, CXPB, MUTPB), 'wb'))
     
     
     #lmbd = 9
