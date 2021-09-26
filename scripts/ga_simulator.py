@@ -12,7 +12,8 @@ import os.path
 import multiprocessing as mp
 from result_utils import calc_vul
 from pathlib import Path
-
+#from scoop import worker
+import scoop
 
 BUDGET = 10
 
@@ -366,7 +367,10 @@ def evalOneMax(individual, lmbd=3):
     start_time = 57600
     end_time = 86400
     try:
-        rank = mp.current_process()._identity[0]
+        #rank = mp.current_process()._identity[0]
+        rank = scoop.worker.decode("utf-8")
+        rank = rank.replace(".", "")
+        rank = rank.replace(":","")
     except:
         rank = 0
 

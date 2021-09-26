@@ -72,6 +72,8 @@ def main():
     return pop, log, hof
 
 if __name__ == "__main__":
+    import logging
+    logging.basicConfig(filename='scoop.log', level=logging.DEBUG)
     pop, log, hof = main()
     pickle.dump(pop, open('./final_results/pop_lmbd{}_cxpb{}_mutpb{}.pkl'.format(LAMBDA, CXPB, MUTPB), 'wb'))
     pickle.dump(log, open('./final_results/log_lmbd{}_cxpb{}_mutpb{}.pkl'.format(LAMBDA, CXPB, MUTPB), 'wb'))
