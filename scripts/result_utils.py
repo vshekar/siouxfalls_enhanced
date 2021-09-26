@@ -21,7 +21,7 @@ def calc_vul(vul_data, nom_data, extra_data):
     try:
         vul = np.sum(vul_list - nom_list)/np.sum(nom_list)
     except Exception as e:
-        print(f'Calc vul exception: {e} {extra_data}')
+        print("Calc vul exception: {} {}".format(e, extra_data))
         vul = None
     return vul
 
@@ -36,7 +36,7 @@ def get_sub_vuls(link, interval, lmbd, sub_nom_data):
         try:
             sub_vul_data = json.load(filepath.open())
         except Exception as e:
-            print(f'Sub vul exception: {filepath}, {e}')
+            print('Sub vul exception: {}, {}'.format(filepath, e))
         sub_vul = calc_vul(sub_vul_data, sub_nom_data, (link, interval, lmbd))
     return sub_vul
 
@@ -54,7 +54,7 @@ def get_full_vuls(link, interval, full_nom_data):
                 full_vul_data = json.load(vul_filepath.open())
                 full_vul = calc_vul(full_vul_data, full_nom_data, (link, interval, lmbd))
         except Exception as e:
-            print(f'Full vul exception: {link}, {interval}, {lmbd}: {e}')
+            print('Full vul exception: {}, {}, {}: {}'.format(link, interval, lmbd, e))
     return full_vul
 
 
