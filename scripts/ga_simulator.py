@@ -30,7 +30,7 @@ class SumoSim():
         self.vehroutes_path = "../output/net_dump/vehroutes{}.xml".format(rank)
         self.rank = rank
 
-        self.SUMOCMD = [self.SUMOBIN, "-c", f"../config/generated_configs/config_{rank}.sumocfg",
+        self.SUMOCMD = [self.SUMOBIN, "-c", "../config/generated_configs/config_{}.sumocfg".format(rank),
                     "--time-to-teleport", "900", "--vehroute-output", self.vehroutes_path,
                     "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true", "--no-step-log"]
         print("*********************************************************")
@@ -340,7 +340,7 @@ def check_results(lmbd, edge, start_time, end_time, individual):
     return None
 
 def run_sim(lmbd, edge, start_time, end_time, rank, individual):
-    filename = f"../output/net_dump/traveltime_{lmbd}_{edge}_{start_time}_{end_time}_{rank}.json"
+    filename = "../output/net_dump/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, rank)
 
     result = check_results(lmbd, edge, start_time, end_time, individual)
     if result is None:
