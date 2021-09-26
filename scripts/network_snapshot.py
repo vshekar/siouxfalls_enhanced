@@ -26,7 +26,7 @@ class SumoSim():
                                   '--device.rerouting.period', '300', 
                                   '--device.rerouting.threads', '3', "--no-step-log"]
 
-        self.SUMOCMD = [self.SUMOBIN, "-c", f"../config/generated_configs/config_{rank}.sumocfg",
+        self.SUMOCMD = [self.SUMOBIN, "-c", "../config/generated_configs/config_{}.sumocfg".format(rank),
                     "--time-to-teleport", "400", "--vehroute-output", self.vehroutes_path,
                     "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true"]
         self.SUMOCMD = self.SUMOCMD+self.rerouting_options
@@ -63,8 +63,8 @@ class SumoSim():
         #config_with_TLS_combined_no_trips.sumocfg
         tree = ET.parse('../config/base_configs/config_with_TLS_combined_no_trips.sumocfg')
         add_files = list(tree.iter(tag='additional-files'))[0]
-        add_files.set('value', f'additional_{self.rank}.xml')
-        tree.write(f'../config/generated_configs/config_{self.rank}.sumocfg', encoding='UTF-8', xml_declaration=True)
+        add_files.set('value', 'additional_{}.xml'.format(self.rank))
+        tree.write('../config/generated_configs/config_{}.sumocfg'.format(self.rank), encoding='UTF-8', xml_declaration=True)
 
 
         tree = ET.parse('../config/base_configs/additional.xml')
@@ -95,7 +95,7 @@ class SumoSim():
         rerouter.append(interval)
         xmlRoot.append(rerouter)
 
-        tree.write(f'../config/generated_configs/additional_{self.rank}.xml')
+        tree.write('../config/generated_configs/additional_{}.xml'.format(self.rank))
 
 
     def run(self):
