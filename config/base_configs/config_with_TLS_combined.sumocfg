@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="../network/SF_combined.net.xml"/>
+        <route-files value="../trips/trip_combined.xml"/> 
+	<additional-files value="additional.xml"/>
+   </input>
+       <processing>
+        <scale value="0.4"/>
+    </processing>
+    <output>
+        <summary-output value="summary.xml"/>
+        <vehroute-output value="..\output\net_dump\vehroutes.xml"/>
+        <vehroute-output.exit-times value="true"/>
+    </output>
+    <report>
+        <verbose value="true"/>
+        <log value="sf_TLS.log"/>
+    </report>
+</configuration>

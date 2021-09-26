@@ -1,0 +1,5 @@
+<additional>
+<vType id="passenger">
+        <param key="has.rerouting.device" value="false" />
+    </vType>
+<rerouter edges="13_1 21_1 26_1 23_1 24_1 25_1 15_1 23_1 9_1 11_1 12_1 13_1" id="1"><interval begin="28800" end="57600"><closingReroute disallow="passenger" id="23_1" /></interval></rerouter></additional>

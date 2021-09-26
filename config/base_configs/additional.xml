@@ -1,0 +1,5 @@
+<additional>
+<vType id="passenger">
+        <param key="has.rerouting.device" value="false"/>
+    </vType>
+</additional>
