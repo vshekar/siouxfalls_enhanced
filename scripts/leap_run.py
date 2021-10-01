@@ -37,7 +37,7 @@ def evalOneMax(individual, lmbd=LAMBDA):
     start_time = 57600
     end_time = 86400
     try:
-        get_worker().id
+        rank = get_worker().id
     except:
         rank = 0
     
