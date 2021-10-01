@@ -15,6 +15,8 @@ from pathlib import Path
 import random
 #from scoop import worker
 #import scoop
+from dask.distributed import get_worker
+
 
 BUDGET = 10
 
@@ -380,7 +382,8 @@ def evalOneMax(individual, lmbd=1):
         #rank = scoop.worker.decode("utf-8")
         #rank = rank.replace(".", "")
         #rank = rank.replace(":","")
-        rank = random.randint(0, 100)
+        #rank = random.randint(0, 100)
+        get_worker().id
     except:
         rank = 0
 

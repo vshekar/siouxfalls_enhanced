@@ -54,4 +54,4 @@ echo "TOTAL_CPUS: ${TOTAL_CPUS}"
 # Python script
 script=ga_simulator_scoop.py
 # SCOOP command
-python -m scoop -n 101 -vv --debug --hostfile $SCOOPHOST_FILE $script > testscoop_$LSB_JOBID.stdout.log
+python3 -m scoop -n 101 -vv --debug --hostfile $SCOOPHOST_FILE $script > testscoop_$LSB_JOBID.stdout.log

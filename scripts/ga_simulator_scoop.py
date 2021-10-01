@@ -11,7 +11,7 @@ from ga_simulator import evalOneMax, get_subnet
 
 import os
 import json
-#import multiprocessing as mp
+import multiprocessing as mp
 from scoop import futures
 import pickle
 from itertools import combinations
@@ -25,9 +25,9 @@ creator.create("Individual", array.array, typecode='b', fitness=creator.FitnessM
 
 LAMBDA = 3
 SIZE = len(get_subnet('18_1', LAMBDA))
-BUDGET = 10
-CXPB = 1.0
-MUTPB = 1.0
+BUDGET = 15
+CXPB = .5
+MUTPB = .5
 
 toolbox = base.Toolbox()
 
@@ -45,9 +45,9 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 #toolbox.register("population_guess", init_population, list, toolbox.individual)
 
 
-#poolSize = mp.cpu_count() - 2
-#p = mp.Pool(poolSize)
-toolbox.register("map", futures.map)
+poolSize = mp.cpu_count() - 2
+p = mp.Pool(poolSize)
+toolbox.register("map", p.map)
 
 toolbox.register("evaluate", evalOneMax, lmbd=LAMBDA)
 toolbox.register("mate", tools.cxTwoPoint)
