@@ -16,6 +16,8 @@ from leap_ec.probe import AttributesCSVProbe
 
 from dask_jobqueue import LSFCluster
 
+import pandas as pd
+
 from leap_ec.problem import ScalarProblem
 import numpy as np
 from ga_simulator import evalOneMax, get_subnet
@@ -26,6 +28,7 @@ BUDGET = 1
 CXPB = .5
 MUTPB = .5
 WORKERS = 5
+GENERATIONS = 5
 
 class EvalSumo(ScalarProblem):
     def __init__(self, maximize=True):
@@ -50,6 +53,7 @@ if __name__ == '__main__':
                cores=WORKERS, memory='8GB', job_extra=['-R select[rh=8]', '-R rusage[mem=8000]'],
                walltime='04:00', 
                )
+    result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
     # We've added some additional state to the probe for DistributedIndividual,
     # so we want to capture that.
@@ -98,7 +102,7 @@ if __name__ == '__main__':
         if os.environ.get(test_env_var, False) == 'True':
             generations = 2
         else:
-            generations = 5
+            generations = GENERATIONS
 
         for current_generation in range(generations):
             context['leap']['generation'] += 1
@@ -118,9 +122,19 @@ if __name__ == '__main__':
                                    probe)
 
             print('generation:', current_generation)
-            [print(x.genome, x.fitness) for x in offspring]
+            #[print(x.genome, x.fitness) for x in offspring]
+            fitness = [x.fitness for x in offspring]
+            genomes = [x.genome for x in offspring]
+
+            result_data['Average'] = np.mean(fitness)
+            result_data['Max'] = np.max(fitness)
+            result_data['Min'] = np.min(fitness)
+            result_data['Population'] = len(fitness)
+            result_data['Best'] = genomes[np.argmax(fitness)]
+
 
             parents = offspring
 
     print('Final population:')
     [print(x.genome, x.fitness) for x in parents]
+    pd.DataFrame.from_dict(result_data).to_csv(f'ga_results_{LAMBDA}_{BUDGET}_{GENERATIONS}.csv')
