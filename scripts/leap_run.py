@@ -20,7 +20,7 @@ from leap_ec.problem import ScalarProblem
 import numpy as np
 from ga_simulator import evalOneMax, get_subnet
 
-LAMBDA = 1
+LAMBDA = 3
 SIZE = len(get_subnet('18_1', LAMBDA))
 BUDGET = 1
 CXPB = .5

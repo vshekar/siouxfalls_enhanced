@@ -372,7 +372,7 @@ def run_sim(lmbd, edge, start_time, end_time, rank, individual):
     return result
 
 
-def evalOneMax(individual, lmbd=1):
+def evalOneMax(individual, lmbd=3):
     #lmbd = 3
     edge = '18_1'
     start_time = 57600
