@@ -405,4 +405,4 @@ if __name__=="__main__":
     #print(len(subnetwork_edges))
     import numpy as np
     indv = np.random.binomial(1, 15/50, size=50)
-    evalOneMax(indv)
+    evalOneMax(indv.tolist())
