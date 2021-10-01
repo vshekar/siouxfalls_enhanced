@@ -47,8 +47,8 @@ def create_indv(budget=BUDGET, size=SIZE):
 if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='short', 
-               cores=WORKERS, memory='8GB', job_extra=['-R select[rh=8]'],
-               walltime='04:00:00',
+               cores=WORKERS, memory='8GB', job_extra=['-R select[rh=8]', '-R rusage[mem=8000]'],
+               walltime='04:00', 
                )
 
     # We've added some additional state to the probe for DistributedIndividual,
