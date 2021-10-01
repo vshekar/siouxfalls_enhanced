@@ -1,4 +1,5 @@
 import os
+import math
 
 import multiprocessing.popen_spawn_posix  # Python 3.9 workaround for Dask.  See https://github.com/dask/distributed/issues/4168
 from distributed import Client
@@ -30,8 +31,8 @@ CXPB = .5
 MUTPB = .5
 WORKERS = 5
 GENERATIONS = 5
-CORES = 5
-MEMORY = 4*CORES
+CORES = 16
+MEMORY = 128
 
 def evalOneMax(individual, lmbd=LAMBDA):
     #lmbd = 3
@@ -75,7 +76,9 @@ if __name__ == '__main__':
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
                walltime='04:00', 
                )
-    cluster.scale(1)
+    scale = math.ceil((WORKERS*1.0)/CORES)
+    print(f'Scaling to: {scale}')
+    cluster.scale(scale)
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
     # We've added some additional state to the probe for DistributedIndividual,
