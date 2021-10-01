@@ -152,10 +152,10 @@ if __name__ == '__main__':
             result_data['Min'] = np.min(fitness)
             result_data['Population'] = len(fitness)
             result_data['Best'] = genomes[np.argmax(fitness)]
-
+            pd.DataFrame.from_dict(result_data).to_csv(f'ga_results_{LAMBDA}_{BUDGET}_{GENERATIONS}.csv')
 
             parents = offspring
 
     print('Final population:')
     [print(x.genome, x.fitness) for x in parents]
-    pd.DataFrame.from_dict(result_data).to_csv(f'ga_results_{LAMBDA}_{BUDGET}_{GENERATIONS}.csv')
+    
