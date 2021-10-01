@@ -28,8 +28,10 @@ SIZE = len(get_subnet('18_1', LAMBDA))
 BUDGET = 5
 CXPB = .5
 MUTPB = .5
-WORKERS = 5
+WORKERS = 15
 GENERATIONS = 5
+CORES = 5
+MEMORY = 8*CORES
 
 def evalOneMax(individual, lmbd=LAMBDA):
     #lmbd = 3
@@ -69,8 +71,8 @@ def create_indv(budget=BUDGET, size=SIZE):
 
 if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
-               interface='ib0', queue='short', 
-               cores=WORKERS, memory='8GB', job_extra=['-R select[rh=8]', '-R rusage[mem=8000]'],
+               interface='ib0', queue='short', n_workers=WORKERS,
+               cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]', '-R rusage[mem=8000]'],
                walltime='04:00', 
                )
     cluster.scale(1)
@@ -104,7 +106,7 @@ if __name__ == '__main__':
     with Client(cluster) as client:
         # create an initial population of 5 parents of 4 bits each for the
         # MAX ONES problem
-        parents = DistributedIndividual.create_population(5, # make five individuals
+        parents = DistributedIndividual.create_population(WORKERS, # make five individuals
                                                           initialize=create_indv, 
                                                           decoder=IdentityDecoder(),
                                                           problem=EvalSumo())
