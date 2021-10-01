@@ -31,7 +31,7 @@ CXPB = .5
 MUTPB = .5
 WORKERS = 100
 GENERATIONS = 40
-CORES = 64
+CORES = 100
 MEMORY = CORES*6
 
 def evalOneMax(individual, lmbd=LAMBDA):
@@ -72,7 +72,7 @@ def create_indv(budget=BUDGET, size=SIZE):
 
 if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
-               interface='ib0', queue='short', n_workers=WORKERS,
+               interface='ib0', queue='large', n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
                walltime='04:00', 
                )
