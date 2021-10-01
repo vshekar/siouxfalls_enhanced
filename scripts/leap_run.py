@@ -31,8 +31,8 @@ CXPB = .5
 MUTPB = .5
 WORKERS = 100
 GENERATIONS = 40
-CORES = 16
-MEMORY = 128
+CORES = 100
+MEMORY = CORES*6
 
 def evalOneMax(individual, lmbd=LAMBDA):
     #lmbd = 3
