@@ -14,6 +14,8 @@ from leap_ec.distrib import DistributedIndividual
 from leap_ec.distrib import synchronous
 from leap_ec.probe import AttributesCSVProbe
 
+from dask_jobqueue import LSFCluster
+
 from leap_ec.problem import ScalarProblem
 import numpy as np
 from ga_simulator import evalOneMax, get_subnet
@@ -43,6 +45,11 @@ def create_indv(budget=BUDGET, size=SIZE):
 
 
 if __name__ == '__main__':
+    cluster = LSFCluster(name='sumo_ga', 
+               interface='ib0', queue='short', 
+               cores=WORKERS, memory='8GB', job_extra=['-R select[rh=8]'],
+               walltime='04:00:00',
+               )
 
     # We've added some additional state to the probe for DistributedIndividual,
     # so we want to capture that.
@@ -68,7 +75,8 @@ if __name__ == '__main__':
                                do_fitness=True,
                                stream=open('simple_sync_distributed_offspring.csv', 'w'))
 
-    with Client(n_workers=WORKERS, threads_per_worker=1) as client:
+    #with Client(n_workers=WORKERS, threads_per_worker=1) as client:
+    with Client(cluster) as client:
         # create an initial population of 5 parents of 4 bits each for the
         # MAX ONES problem
         parents = DistributedIndividual.create_population(5, # make five individuals
