@@ -20,15 +20,35 @@ import pandas as pd
 
 from leap_ec.problem import ScalarProblem
 import numpy as np
-from ga_simulator import evalOneMax, get_subnet
+from ga_simulator import get_subnet, run_sim
+from dask.distributed import get_worker
 
 LAMBDA = 3
 SIZE = len(get_subnet('18_1', LAMBDA))
-BUDGET = 1
+BUDGET = 5
 CXPB = .5
 MUTPB = .5
 WORKERS = 5
 GENERATIONS = 5
+
+def evalOneMax(individual, lmbd=LAMBDA):
+    #lmbd = 3
+    edge = '18_1'
+    start_time = 57600
+    end_time = 86400
+    try:
+        get_worker().id
+    except:
+        rank = 0
+    
+    if np.sum(individual) > BUDGET:
+        penalty = -10*(np.sum(individual) - BUDGET)
+    else:
+        penalty = 0
+
+    vul = run_sim(lmbd, edge, start_time, end_time, rank, individual)
+
+    return vul+penalty 
 
 class EvalSumo(ScalarProblem):
     def __init__(self, maximize=True):
@@ -53,6 +73,7 @@ if __name__ == '__main__':
                cores=WORKERS, memory='8GB', job_extra=['-R select[rh=8]', '-R rusage[mem=8000]'],
                walltime='04:00', 
                )
+    cluster.scale(1)
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
     # We've added some additional state to the probe for DistributedIndividual,
