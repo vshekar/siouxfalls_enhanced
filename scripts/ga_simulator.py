@@ -12,8 +12,9 @@ import os.path
 import multiprocessing as mp
 from result_utils import calc_vul
 from pathlib import Path
+import random
 #from scoop import worker
-import scoop
+#import scoop
 
 BUDGET = 10
 
@@ -33,7 +34,6 @@ class SumoSim():
         self.SUMOCMD = [self.SUMOBIN, "-c", "../config/generated_configs/config_{}.sumocfg".format(rank),
                     "--time-to-teleport", "900", "--vehroute-output", self.vehroutes_path,
                     "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true", "--no-step-log"]
-        print("*********************************************************")
         print("Simulation Details: \n Disrupted link: {} \n Lambda: {} \n Start - End time: {} - {}".format(disrupted, lmbd, start_time, end_time))
         print("Initializing")
         self.filename = filename
@@ -46,7 +46,12 @@ class SumoSim():
 
         self.start_time = start_time
         self.end_time = end_time
+        
+        #if isinstance(gene, (np.ndarray, np.generic)):
+        #    self.gene = gene.tolist()
+        #else:
         self.gene = gene
+        print("*********************************************************")
         if start_time == 0 and end_time ==0:
             self.nominal = True
         else:
@@ -85,7 +90,7 @@ class SumoSim():
         to_node = disruptedEdge.getToNode()
         from_node = disruptedEdge.getFromNode()
 
-        if not self.gene:
+        if self.gene is None:
             dests = [edge.getID() for edge in list(to_node.getIncoming())] + \
                             [edge.getID() for edge in list(to_node.getOutgoing())]
             sources = [edge.getID() for edge in list(from_node.getIncoming())] + \
@@ -93,6 +98,8 @@ class SumoSim():
         else:
             sources = [disruptedEdge.getID()]
             if isinstance(self.gene[0], int):
+                print(len(self.gene), len(self.subnetwork_edges))
+
                 # If gene is a series of numbers, then its a regular gene
                 dests = [edge for i, edge in enumerate(self.subnetwork_edges) if self.gene[i]]
             elif isinstance(self.gene[0], str):
@@ -342,9 +349,11 @@ def check_results(lmbd, edge, start_time, end_time, individual):
 def run_sim(lmbd, edge, start_time, end_time, rank, individual):
     filename = "../output/net_dump/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, rank)
 
-    result = check_results(lmbd, edge, start_time, end_time, individual)
+    #result = check_results(lmbd, edge, start_time, end_time, individual)
+    result = None
     if result is None:
         ss = SumoSim(edge, lmbd, start_time, end_time, filename, 0, gene=individual)
+        
         if not os.path.isfile(filename):
             print('Result not found, Running sim <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
             f = open(filename, 'w')
@@ -361,20 +370,21 @@ def run_sim(lmbd, edge, start_time, end_time, rank, individual):
     return result
 
 
-def evalOneMax(individual, lmbd=3):
+def evalOneMax(individual, lmbd=1):
     #lmbd = 3
     edge = '18_1'
     start_time = 57600
     end_time = 86400
     try:
         #rank = mp.current_process()._identity[0]
-        rank = scoop.worker.decode("utf-8")
-        rank = rank.replace(".", "")
-        rank = rank.replace(":","")
+        #rank = scoop.worker.decode("utf-8")
+        #rank = rank.replace(".", "")
+        #rank = rank.replace(":","")
+        rank = random.randint(0, 100)
     except:
         rank = 0
 
-    return run_sim(lmbd, edge, start_time, end_time, rank, individual),
+    return run_sim(lmbd, edge, start_time, end_time, rank, individual)
 
 def get_subnet(dis_edge, lmbd):
     tree = ET.parse('../network/SF_combined.edg.xml')
@@ -386,6 +396,10 @@ def get_subnet(dis_edge, lmbd):
     return subnetwork_edges
 
 
+
 if __name__=="__main__":
-    subnetwork_edges = get_subnet('18_1', 3)
-    print(len(subnetwork_edges))
+    #subnetwork_edges = get_subnet('18_1', 3)
+    #print(len(subnetwork_edges))
+    import numpy as np
+    indv = np.random.binomial(1, 15/50, size=50)
+    evalOneMax(indv)
