@@ -28,10 +28,10 @@ SIZE = len(get_subnet('18_1', LAMBDA))
 BUDGET = 5
 CXPB = .5
 MUTPB = .5
-WORKERS = 15
+WORKERS = 5
 GENERATIONS = 5
 CORES = 5
-MEMORY = 8*CORES
+MEMORY = 4*CORES
 
 def evalOneMax(individual, lmbd=LAMBDA):
     #lmbd = 3
@@ -72,7 +72,7 @@ def create_indv(budget=BUDGET, size=SIZE):
 if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='short', n_workers=WORKERS,
-               cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]', '-R rusage[mem=8000]'],
+               cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
                walltime='04:00', 
                )
     cluster.scale(1)
