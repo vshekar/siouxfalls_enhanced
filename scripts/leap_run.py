@@ -29,9 +29,9 @@ SIZE = len(get_subnet('18_1', LAMBDA))
 BUDGET = 5
 CXPB = .5
 MUTPB = .5
-WORKERS = 100
-GENERATIONS = 40
-CORES = 100
+WORKERS = 3
+GENERATIONS = 2
+CORES = 3
 MEMORY = CORES*6
 
 def evalOneMax(individual, lmbd=LAMBDA):
@@ -78,7 +78,7 @@ if __name__ == '__main__':
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
     print(f'Scaling to: {scale}')
-    cluster.scale(scale)
+    cluster.scale(cores=WORKERS)
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
     # We've added some additional state to the probe for DistributedIndividual,
@@ -148,7 +148,8 @@ if __name__ == '__main__':
                                    probe)
 
             print('generation:', current_generation)
-            #[print(x.genome, x.fitness) for x in offspring]
+            with open('output.txt', 'w') as f:
+                [print(x.genome, x.fitness, file=f) for x in offspring]
             fitness = [x.fitness for x in offspring]
             genomes = [x.genome for x in offspring]
 
@@ -162,5 +163,7 @@ if __name__ == '__main__':
             parents = offspring
     cluster.close()
     print('Final population:')
-    [print(x.genome, x.fitness) for x in parents]
+    with open('output.txt', 'w') as f:
+        [print(x.genome, x.fitness, file=f) for x in parents]
+    
     
