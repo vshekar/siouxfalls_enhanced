@@ -29,9 +29,9 @@ SIZE = len(get_subnet('18_1', LAMBDA))
 BUDGET = 5
 CXPB = .5
 MUTPB = .5
-WORKERS = 3
-GENERATIONS = 2
-CORES = 3
+WORKERS = 100
+GENERATIONS = 40
+CORES = 100
 MEMORY = CORES*6
 
 def evalOneMax(individual, lmbd=LAMBDA):
@@ -153,11 +153,11 @@ if __name__ == '__main__':
             fitness = [x.fitness for x in offspring]
             genomes = [x.genome for x in offspring]
 
-            result_data['Average'] = np.mean(fitness)
-            result_data['Max'] = np.max(fitness)
-            result_data['Min'] = np.min(fitness)
-            result_data['Population'] = len(fitness)
-            result_data['Best'] = genomes[np.argmax(fitness)]
+            result_data['Average'].append(np.mean(fitness))
+            result_data['Max'].append(np.max(fitness))
+            result_data['Min'].append(np.min(fitness))
+            result_data['Population'].append(len(fitness))
+            result_data['Best'].append(genomes[np.argmax(fitness)])
             pd.DataFrame.from_dict(result_data).to_csv(f'ga_results_{LAMBDA}_{BUDGET}_{GENERATIONS}.csv')
 
             parents = offspring
