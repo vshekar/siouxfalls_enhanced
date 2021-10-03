@@ -33,12 +33,15 @@ WORKERS = 100
 GENERATIONS = 40
 CORES = 100
 MEMORY = CORES*3
+MESO = True
 
 def evalOneMax(individual, lmbd=LAMBDA):
     #lmbd = 3
     edge = '18_1'
     start_time = 57600
     end_time = 86400
+    
+    #end_time = 10
     try:
         rank = get_worker().id
     except:
@@ -48,9 +51,7 @@ def evalOneMax(individual, lmbd=LAMBDA):
         penalty = -10*(np.sum(individual) - BUDGET)
     else:
         penalty = 0
-
-    vul = run_sim(lmbd, edge, start_time, end_time, rank, individual)
-
+    vul = run_sim(lmbd, edge, start_time, end_time, rank, individual, meso=MESO)
     return vul+penalty 
 
 class EvalSumo(ScalarProblem):

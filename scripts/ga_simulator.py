@@ -25,7 +25,9 @@ class SumoSim():
     SUMOBIN = 'sumo'
     snapshot_data = {}
 
-    def __init__(self, disrupted, lmbd, start_time, end_time, filename, rank, gene=[]):
+    def __init__(self, disrupted, lmbd, 
+                 start_time, end_time, 
+                 filename, rank, gene=[], meso=False):
         #try:
         #    rank = mp.current_process()._identity[0]
         #except:
@@ -35,7 +37,10 @@ class SumoSim():
 
         self.SUMOCMD = [self.SUMOBIN, "-c", "../config/generated_configs/config_{}.sumocfg".format(rank),
                     "--time-to-teleport", "900", "--vehroute-output", self.vehroutes_path,
-                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", "-v", "false", "-W", "true", "--no-step-log"]
+                    "--vehroute-output.exit-times", "true", "--ignore-route-errors", 
+                    "-v", "false", "-W", "true", "--no-step-log"]
+        if meso:
+            self.SUMOCMD = self.SUMOCMD + ['--mesosim']
         print("Simulation Details: \n Disrupted link: {} \n Lambda: {} \n Start - End time: {} - {}".format(disrupted, lmbd, start_time, end_time))
         print("Initializing")
         self.filename = filename
@@ -348,13 +353,15 @@ def check_results(lmbd, edge, start_time, end_time, individual):
             return -100*(sum(individual) - BUDGET)
     return None
 
-def run_sim(lmbd, edge, start_time, end_time, rank, individual):
+def run_sim(lmbd, edge, start_time, end_time, rank, individual, meso=False):
     filename = "../output/net_dump/traveltime_{}_{}_{}_{}_{}.json".format(lmbd, edge, start_time, end_time, rank)
 
     #result = check_results(lmbd, edge, start_time, end_time, individual)
     result = None
     if result is None:
-        ss = SumoSim(edge, lmbd, start_time, end_time, filename, rank, gene=individual)
+        ss = SumoSim(edge, lmbd, start_time, 
+                     end_time, filename, rank, 
+                     gene=individual, meso=meso)
         
         if not os.path.isfile(filename):
             print('Result not found, Running sim <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
@@ -363,7 +370,11 @@ def run_sim(lmbd, edge, start_time, end_time, rank, individual):
         ss.run()
         with open(filename) as f:
             sub_tt = json.load(f)
-        filename = '../output/net_dump/1.high_correlation/lmbd{}/traveltime_{}_0_10_{}_False.json'.format(lmbd, edge, lmbd)
+        if meso:
+            meso_suffix = '_meso'
+        else:
+            meso_suffix = ''
+        filename = '../output/net_dump/1.high_correlation/lmbd{}/traveltime_{}_0_10_{}_False{}.json'.format(lmbd, edge, lmbd, meso_suffix)
         with open(filename) as f:
             nom_tt = json.load(f)
 
