@@ -72,7 +72,7 @@ def create_indv(budget=BUDGET, size=SIZE):
 
 if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
-               interface='ib0', queue='short', n_workers=WORKERS,
+               interface='ib0', queue='long', n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
                walltime='24:00', 
                )
