@@ -26,10 +26,10 @@ class SumoSim():
     snapshot_data = {}
 
     def __init__(self, disrupted, lmbd, start_time, end_time, filename, rank, gene=[]):
-        try:
-            rank = mp.current_process()._identity[0]
-        except:
-            rank = 0
+        #try:
+        #    rank = mp.current_process()._identity[0]
+        #except:
+        #    rank = 0
         self.vehroutes_path = "../output/net_dump/vehroutes{}.xml".format(rank)
         self.rank = rank
 
@@ -354,7 +354,7 @@ def run_sim(lmbd, edge, start_time, end_time, rank, individual):
     #result = check_results(lmbd, edge, start_time, end_time, individual)
     result = None
     if result is None:
-        ss = SumoSim(edge, lmbd, start_time, end_time, filename, 0, gene=individual)
+        ss = SumoSim(edge, lmbd, start_time, end_time, filename, rank, gene=individual)
         
         if not os.path.isfile(filename):
             print('Result not found, Running sim <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')

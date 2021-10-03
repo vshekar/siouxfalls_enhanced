@@ -32,7 +32,7 @@ MUTPB = .5
 WORKERS = 100
 GENERATIONS = 40
 CORES = 100
-MEMORY = CORES*6
+MEMORY = CORES*3
 
 def evalOneMax(individual, lmbd=LAMBDA):
     #lmbd = 3
