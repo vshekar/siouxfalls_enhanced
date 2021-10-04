@@ -105,7 +105,8 @@ if __name__ == '__main__':
                header_skip=['span']
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
-    cluster.scale(jobs=scale)
+    #cluster.scale(jobs=scale)
+    cluster.scale(job=1)
     print(cluster.job_script())
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
