@@ -5,6 +5,7 @@ import time
 
 import multiprocessing.popen_spawn_posix  # Python 3.9 workaround for Dask.  See https://github.com/dask/distributed/issues/4168
 from distributed import Client
+from dask.utils import format_bytes
 import toolz
 
 from leap_ec import context, test_env_var
@@ -17,7 +18,7 @@ from leap_ec.distrib import DistributedIndividual
 from leap_ec.distrib import synchronous
 from leap_ec.probe import AttributesCSVProbe
 
-from dask_jobqueue import LSFCluster
+from dask_jobqueue import lsf, JobQueueCluster
 
 import pandas as pd
 
@@ -73,6 +74,23 @@ def create_indv_func(budget=BUDGET, size=SIZE):
         indv = np.random.binomial(1, budget/size, size=size)
         return indv
     return create_indv
+
+
+class LSFJob(lsf.LSFJob):
+    @property
+    def worker_process_threads(self):
+        return 1
+
+    @property
+    def worker_process_memory(self):
+        mem = format_bytes(self.worker_memory)
+        mem = mem.replace(" ", "")
+        return mem
+
+
+class LSFCluster(JobQueueCluster):
+    job_cls = LSFJob
+
 
 
 if __name__ == '__main__':
