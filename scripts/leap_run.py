@@ -138,7 +138,7 @@ if __name__ == '__main__':
     with Client(cluster) as client:
         # create an initial population of 5 parents of 4 bits each for the
         # MAX ONES problem
-        parents = DistributedIndividual.create_population(WORKERS, # make five individuals
+        parents = DistributedIndividual.create_population(100, # make five individuals
                                                           initialize=create_indv_func(
                                                               budget=BUDGET,
                                                               size=SIZE
