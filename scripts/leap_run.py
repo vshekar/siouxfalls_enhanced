@@ -67,9 +67,11 @@ class EvalSumo(ScalarProblem):
         return evalOneMax(phenome, lmbd=self.lmbd, budget=self.budget)
 
 
-def create_indv(budget=BUDGET, size=SIZE):
-    indv = np.random.binomial(1, budget/size, size=size)
-    return indv
+def create_indv_func(budget=BUDGET, size=SIZE):
+    def create_indv():
+        indv = np.random.binomial(1, budget/size, size=size)
+        return indv
+    return create_indv
 
 
 if __name__ == '__main__':
@@ -115,7 +117,7 @@ if __name__ == '__main__':
         # create an initial population of 5 parents of 4 bits each for the
         # MAX ONES problem
         parents = DistributedIndividual.create_population(WORKERS, # make five individuals
-                                                          initialize=create_indv(
+                                                          initialize=create_indv_func(
                                                               budget=BUDGET,
                                                               size=SIZE
                                                           ), 
