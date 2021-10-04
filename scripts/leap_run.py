@@ -1,5 +1,6 @@
 import os
 import math
+import sys
 
 import multiprocessing.popen_spawn_posix  # Python 3.9 workaround for Dask.  See https://github.com/dask/distributed/issues/4168
 from distributed import Client
@@ -27,15 +28,13 @@ from dask.distributed import get_worker
 LAMBDA = 3
 SIZE = len(get_subnet('18_1', LAMBDA))
 BUDGET = 5
-CXPB = .5
-MUTPB = .5
 WORKERS = 4
 GENERATIONS = 2
 CORES = 4
 MEMORY = CORES*3
 MESO = True
 
-def evalOneMax(individual, lmbd=LAMBDA):
+def evalOneMax(individual, lmbd=LAMBDA, budget=BUDGET):
     #lmbd = 3
     edge = '18_1'
     start_time = 57600
@@ -47,15 +46,17 @@ def evalOneMax(individual, lmbd=LAMBDA):
     except:
         rank = 0
     
-    if np.sum(individual) > BUDGET:
-        penalty = -10*(np.sum(individual) - BUDGET)
+    if np.sum(individual) > budget:
+        penalty = -10*(np.sum(individual) - budget)
     else:
         penalty = 0
     vul = run_sim(lmbd, edge, start_time, end_time, rank, individual, meso=MESO)
     return vul+penalty 
 
 class EvalSumo(ScalarProblem):
-    def __init__(self, maximize=True):
+    def __init__(self, lmbd, budget, maximize=True):
+        self.lmbd = lmbd
+        self.budget = budget
         super().__init__(maximize)
 
     def evaluate(self, phenome):
@@ -63,7 +64,7 @@ class EvalSumo(ScalarProblem):
             raise ValueError(("Expected phenome to be a numpy array. "
                               f"Got {type(phenome)}."))
         phenome = phenome.tolist()
-        return evalOneMax(phenome)
+        return evalOneMax(phenome, lmbd=self.lmbd, budget=self.budget)
 
 
 def create_indv(budget=BUDGET, size=SIZE):
@@ -72,6 +73,9 @@ def create_indv(budget=BUDGET, size=SIZE):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 5:
+        BUDGET, WORKER, CORES, GENERATIONS = (int(arg) for arg in sys.argv[1:])
+        
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='long', n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
@@ -111,9 +115,12 @@ if __name__ == '__main__':
         # create an initial population of 5 parents of 4 bits each for the
         # MAX ONES problem
         parents = DistributedIndividual.create_population(WORKERS, # make five individuals
-                                                          initialize=create_indv, 
+                                                          initialize=create_indv(
+                                                              budget=BUDGET,
+                                                              size=SIZE
+                                                          ), 
                                                           decoder=IdentityDecoder(),
-                                                          problem=EvalSumo())
+                                                          problem=EvalSumo(LAMBDA, BUDGET))
 
         # Scatter the initial parents to dask workers for evaluation
         parents = synchronous.eval_population(parents, client=client)
