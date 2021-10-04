@@ -79,9 +79,9 @@ if __name__ == '__main__':
         BUDGET, WORKERS, CORES, GENERATIONS = (int(arg) for arg in sys.argv[1:])
         
     cluster = LSFCluster(name='sumo_ga', 
-               interface='ib0', queue='long', n_workers=WORKERS,
+               interface='ib0', queue='short', #n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
-               walltime='24:00', 
+               walltime='4:00', 
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
     print(f'Scaling to: {scale}')
