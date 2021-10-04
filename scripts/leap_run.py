@@ -86,7 +86,7 @@ if __name__ == '__main__':
                walltime='4:00', ncpus=CORES, processes=WORKERS,
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
-    cluster.scale(scale)
+    cluster.scale(jobs=scale)
     print(cluster.job_script())
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
