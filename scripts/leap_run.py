@@ -102,6 +102,7 @@ if __name__ == '__main__':
                interface='ib0', queue='short', #n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
                walltime='4:00', ncpus=CORES, processes=CORES,
+               header_skip=['span']
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
     cluster.scale(jobs=scale)
