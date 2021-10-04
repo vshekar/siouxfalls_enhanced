@@ -84,7 +84,7 @@ if __name__ == '__main__':
                walltime='4:00', 
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
-    print(f'Scaling to: {scale}')
+    print(cluster.job_script())
     cluster.scale(cores=WORKERS)
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
