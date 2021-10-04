@@ -31,7 +31,7 @@ BUDGET = 5
 WORKERS = 4
 GENERATIONS = 2
 CORES = 4
-MEMORY = CORES*3
+MEMORY = CORES*2
 MESO = True
 
 def evalOneMax(individual, lmbd=LAMBDA, budget=BUDGET):
@@ -77,6 +77,7 @@ def create_indv_func(budget=BUDGET, size=SIZE):
 if __name__ == '__main__':
     if len(sys.argv) == 5:
         BUDGET, WORKERS, CORES, GENERATIONS = (int(arg) for arg in sys.argv[1:])
+        MEMORY = CORES*2
         
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='short', #n_workers=WORKERS,
