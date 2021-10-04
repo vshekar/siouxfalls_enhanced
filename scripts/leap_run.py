@@ -82,7 +82,7 @@ if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='short', #n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
-               walltime='4:00', processes=CORES, 
+               walltime='4:00', processes=WORKERS, 
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
     cluster.scale(cores=WORKERS)
