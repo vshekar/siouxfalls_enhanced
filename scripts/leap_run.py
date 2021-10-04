@@ -83,10 +83,10 @@ if __name__ == '__main__':
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='short', #n_workers=WORKERS,
                cores=CORES, memory=f'{MEMORY}GB', job_extra=['-R select[rh=8]'],
-               walltime='4:00', ncpus=CORES, processes=int(CORES/2),
+               walltime='4:00', ncpus=CORES, processes=CORES,
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
-    cluster.scale(cores=WORKERS)
+    cluster.scale(scale)
     print(cluster.job_script())
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
