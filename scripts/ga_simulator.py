@@ -1,8 +1,10 @@
 import pandas as pd
 import traci
 import time
+import dask
+
 import sumolib
-from collections import namedtuple
+
 import pickle
 #import networkx
 import xml.etree.ElementTree as ET
@@ -207,6 +209,7 @@ class SumoSim():
 
     def run_sim(self):
         traci.start(self.SUMOCMD)
+        dask.distributed.get_worker().log_event("start_sim", 'Started simulation')
         time.sleep(15.0)
         while True:
             try:
@@ -215,6 +218,7 @@ class SumoSim():
                 break
             except Exception as e:
                 print(f'Exception {e}')
+                dask.distributed.get_worker().log_event("exception", e)
                 continue
 
         self.arrived = 0
