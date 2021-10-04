@@ -106,7 +106,7 @@ if __name__ == '__main__':
                )
     scale = math.ceil((WORKERS*1.0)/CORES)
     #cluster.scale(jobs=scale)
-    cluster.scale(job=1)
+    cluster.scale(jobs=1)
     print(cluster.job_script())
     result_data = {'Population':[], 'Max':[], 'Min':[], 'Average':[], 'Best':[]}
 
