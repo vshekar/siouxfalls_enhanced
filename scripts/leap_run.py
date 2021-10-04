@@ -1,6 +1,7 @@
 import os
 import math
 import sys
+import time
 
 import multiprocessing.popen_spawn_posix  # Python 3.9 workaround for Dask.  See https://github.com/dask/distributed/issues/4168
 from distributed import Client
@@ -64,6 +65,7 @@ class EvalSumo(ScalarProblem):
             raise ValueError(("Expected phenome to be a numpy array. "
                               f"Got {type(phenome)}."))
         phenome = phenome.tolist()
+        time.sleep(15.0)
         return evalOneMax(phenome, lmbd=self.lmbd, budget=self.budget)
 
 
