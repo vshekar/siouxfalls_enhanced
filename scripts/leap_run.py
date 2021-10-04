@@ -74,7 +74,7 @@ def create_indv(budget=BUDGET, size=SIZE):
 
 if __name__ == '__main__':
     if len(sys.argv) == 5:
-        BUDGET, WORKER, CORES, GENERATIONS = (int(arg) for arg in sys.argv[1:])
+        BUDGET, WORKERS, CORES, GENERATIONS = (int(arg) for arg in sys.argv[1:])
         
     cluster = LSFCluster(name='sumo_ga', 
                interface='ib0', queue='long', n_workers=WORKERS,
