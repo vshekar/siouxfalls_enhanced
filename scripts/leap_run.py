@@ -83,7 +83,7 @@ class LSFJob(lsf.LSFJob):
 
     @property
     def worker_process_memory(self):
-        mem = format_bytes(self.worker_memory)
+        mem = format_bytes(self.worker_memory/self.worker_cores)
         mem = mem.replace(" ", "")
         return mem
 
