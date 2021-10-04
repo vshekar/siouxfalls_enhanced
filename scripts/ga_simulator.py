@@ -208,8 +208,15 @@ class SumoSim():
     def run_sim(self):
         traci.start(self.SUMOCMD)
         time.sleep(15.0)
-        self.close_edges()
-        self.setup_trips()
+        while True:
+            try:
+                self.close_edges()
+                self.setup_trips()
+                break
+            except Exception as e:
+                print(f'Exception {e}')
+                continue
+
         self.arrived = 0
         self.step = 0
 
