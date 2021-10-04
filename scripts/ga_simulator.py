@@ -1,5 +1,6 @@
 import pandas as pd
 import traci
+import time
 import sumolib
 from collections import namedtuple
 import pickle
@@ -206,6 +207,7 @@ class SumoSim():
 
     def run_sim(self):
         traci.start(self.SUMOCMD)
+        time.sleep(15.0)
         self.close_edges()
         self.setup_trips()
         self.arrived = 0

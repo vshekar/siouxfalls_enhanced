@@ -65,7 +65,6 @@ class EvalSumo(ScalarProblem):
             raise ValueError(("Expected phenome to be a numpy array. "
                               f"Got {type(phenome)}."))
         phenome = phenome.tolist()
-        time.sleep(15.0)
         return evalOneMax(phenome, lmbd=self.lmbd, budget=self.budget)
 
 
